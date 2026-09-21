@@ -1,0 +1,38 @@
+{
+  "baseline_summary": {
+    "total_test_cases": 3000,
+    "inconsistent_test_cases": 2891,
+    "inconsistent_fraction": 0.9636666666666667
+  },
+  "chosen_k": 3,
+  "cluster_purity_vs_dominant_resolver": 0.7097890003459011,
+  "sensitivity_analysis": {
+    "weights": [
+      0.05,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6
+    ],
+    "opportunity_rates": [
+      0.6075,
+      0.71,
+      0.78875,
+      0.85,
+      0.88875,
+      0.92625,
+      0.9425
+    ],
+    "conditional_severity": [
+      3.7839506172839505,
+      4.03169014084507,
+      3.919175911251981,
+      3.902941176470588,
+      3.8649789029535864,
+      3.7233468286099867,
+      3.874005305039788
+    ]
+  }
+}
