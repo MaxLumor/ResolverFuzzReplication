@@ -1,14 +1,4 @@
-"""
-fuzzer.py
 
-Orchestrates the replication pipeline:
-  1. generate a query/response pair with the PCFG generator
-  2. feed it to a *fresh* pool of mock resolvers (one round-trip,
-     matching the paper's "constrained stateful fuzzing" -- Section
-     3.2: reset resolvers between rounds, only mutate one
-     query/response pair per round)
-  3. run the differential-testing oracle on the resulting caches
-"""
 
 from __future__ import annotations
 
@@ -20,14 +10,7 @@ from oracle import run_differential_test, TestCaseResult, summarize
 
 
 def structural_bug_opportunities(response: DNSResponse, zone: str) -> frozenset:
-    """Labels a test case by which documented bug *mechanism* its
-    generated response structurally exercises -- independent of what
-    any particular resolver actually decides to cache. This is our
-    ground truth for checking whether differential testing + clustering
-    actually separates distinct bug classes (see run_experiment.py),
-    rather than deriving "ground truth" from the diff vector itself
-    (which would be circular).
-    """
+    
     tags = set()
     for rec in response.authority + response.additional:
         if not is_in_bailiwick(rec.name, zone):

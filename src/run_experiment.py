@@ -6,7 +6,7 @@ Main entry point. Produces three plots in ../results/:
   1. elbow_sse.png        -- replicates Figure 3 (SSE vs k for bisecting
                               K-means), used to justify a chosen k.
   2. cluster_bug_recovery.png
-                            -- our own analysis: does clustering the
+                            -- My own analysis: does clustering the
                               diff vectors actually separate the three
                               injected bug classes (CP1 / CP2 / RC2)
                               from each other and from "no bug"? This

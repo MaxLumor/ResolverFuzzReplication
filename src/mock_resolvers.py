@@ -1,38 +1,4 @@
-"""
-mock_resolvers.py
 
-Simulated resolver *caching policies*, standing in for the six real DNS
-software packages ResolverFuzz tested against (BIND, Unbound, Knot,
-PowerDNS, MaraDNS, Technitium).
-
-IMPORTANT SCOPE NOTE (put this in your Limitations slide too):
-We do NOT run real resolver binaries. Running 6 real DNS resolvers and
-attacking them over a real or containerized network is what the
-original paper did, and is out of scope for a course replication both
-for time and for the ethical/infrastructure reasons the paper itself
-discusses in Section 7. Instead, each class below implements a small,
-literal caching-policy model whose divergent behavior is *transcribed
-directly from the paper's own descriptions* of documented bugs
-(Table 2 and Section 6.1/6.2), e.g.:
-
-  - CP1 (out-of-bailiwick cache poisoning): BIND/Knot/Technitium were
-    shown to cache Authority/Additional records outside the queried
-    zone; PowerDNS/Unbound do bailiwick-check and drop them.
-  - CP2 (in-bailiwick asymmetry): only PowerDNS was shown to
-    proactively cache NS records from Additional-section glue even
-    when not directly asked.
-  - RC2 (unlimited cache store): Unbound was shown to cache *any*
-    record type from Authority/Additional, not just NS/SOA/DNSSEC as
-    RFC 4035 permits.
-
-This lets us test whether ResolverFuzz's *methodology* (differential
-testing + clustering) is capable of re-discovering these known,
-documented divergences from freely generated PCFG test cases -- which
-is a legitimate and falsifiable replication of the paper's central
-experimental claim ("differential testing across diverse resolvers
-surfaces cache-poisoning-relevant inconsistencies without a golden
-model").
-"""
 
 from __future__ import annotations
 
@@ -59,13 +25,7 @@ class CachedRecord:
 
 
 class MockResolver:
-    """Base class: RFC-conformant baseline caching policy.
-
-    Baseline policy (roughly RFC 1034 / 4035 conformant):
-      - only caches Answer-section records matching the queried name,
-        plus NS/SOA/DNSSEC-type records from Authority, plus glue
-        (A/AAAA) from Additional -- and only if in-bailiwick.
-    """
+    
     name = "Baseline"
     ALLOWED_AUTHORITY_TYPES = {"NS", "SOA", "RRSIG"}
     ALLOWED_ADDITIONAL_TYPES = {"A", "AAAA"}
@@ -130,8 +90,7 @@ class MockBIND(MockResolver):
 
 
 class MockUnbound(MockResolver):
-    """Reproduces RC2: caches *all* record types from Authority/
-    Additional, not just NS/SOA/DNSSEC/glue (Sec 6.2, RC2)."""
+
     name = "Unbound"
 
     def _accept(self, rec: DNSRecord, section: str) -> bool:
@@ -142,9 +101,7 @@ class MockUnbound(MockResolver):
 
 
 class MockPowerDNS(MockResolver):
-    """Reproduces CP2: proactively caches NS glue from Additional even
-    without an explicit query for it, and treats it as authoritative
-    for the whole subzone (Sec 6.1, CP2)."""
+
     name = "PowerDNS"
 
     def process(self, query: DNSQuery, response: DNSResponse) -> None:
@@ -164,9 +121,7 @@ class MockPowerDNS(MockResolver):
 
 
 class MockKnot(MockResolver):
-    """Baseline-conformant, matching Table 2's mostly-'not vulnerable'
-    row for Knot on CP1/RC-type bugs (used as one of the closer-to-
-    correct references for differential testing)."""
+
     name = "Knot"
 
 

@@ -1,20 +1,3 @@
-"""
-pcfg_generator.py
-
-Replicates the Probabilistic Context-Free Grammar (PCFG) test-case
-generator described in ResolverFuzz (Zhang et al., USENIX Security 2024),
-Section 4.2 and Appendix B (Listings 1 and 2).
-
-The grammar assigns weighted probabilities to DNS message fields so
-that the fuzzer spends most of its effort on "plausible" messages
-(which are more likely to be accepted deep into resolver logic) while
-still occasionally exploring rare/edge-case values -- exactly the
-design tradeoff the paper argues for in its PCFG-vs-equal-probability
-ablation (Section 5.3, Figure 6b).
-
-This module is intentionally self-contained (no network I/O) so it can
-be unit tested and reused by the fuzzer/oracle pipeline.
-"""
 
 from __future__ import annotations
 
@@ -136,13 +119,7 @@ class DNSResponse:
 # ---------------------------------------------------------------------------
 
 class PCFGGenerator:
-    """
-    Generates DNS client-query / ns-response pairs following the paper's
-    grammar. `field_probabilities` allows overriding individual weight
-    tables (used for the ablation / sensitivity study in run_experiment.py,
-    mirroring the paper's "PCFG probabilities" ablation in Sec 5.3).
-    """
-
+    
     def __init__(self, base_domain: str, seed: Optional[int] = None,
                  opcode_table=None, rcode_table=None,
                  byte_mutation_prob: float = 0.1):
@@ -190,9 +167,7 @@ class PCFGGenerator:
         return self._maybe_byte_mutate(name)
 
     def _maybe_byte_mutate(self, s: str) -> str:
-        """Byte-level mutation of terminal symbols (Sec 4.2), applied with
-        probability `byte_mutation_prob` using special bytes noted in the
-        paper: '.', '\\000', '@', '/', '\\'."""
+        
         if self.rng.random() >= self.byte_mutation_prob:
             return s
         special = [".", "\x00", "@", "/", "\\"]
@@ -260,10 +235,7 @@ class PCFGGenerator:
         )
 
     def generate_response(self, query: DNSQuery) -> DNSResponse:
-        """Generate an ns-response *paired to* `query`, per the paper's
-        design choice (Sec 4.2): the response reuses the query's
-        Question section / TXID so resolvers don't trivially drop it,
-        and only Answer/Authority/Additional are freely generated."""
+        
         an_count = int(weighted_choice(RRCOUNT_TABLE, self.rng))
         ns_count = int(weighted_choice(RRCOUNT_TABLE, self.rng))
         ar_count = int(weighted_choice(RRCOUNT_TABLE, self.rng))

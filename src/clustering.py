@@ -1,14 +1,4 @@
-"""
-clustering.py
 
-Bisecting K-Means clustering of cache-difference vectors, replicating
-Section 4.3 (bug triaging) and Figure 3 (elbow-method k selection).
-
-We use scikit-learn's BisectingKMeans (available in sklearn >= 1.1),
-matching the paper's stated use of scikit-learn (Section 5.1: "For the
-oracles, we use a Python library scikit-learn to implement the
-clustering method").
-"""
 
 from __future__ import annotations
 
@@ -30,10 +20,7 @@ def elbow_sse_curve(vectors: np.ndarray, k_range: range) -> dict[int, float]:
 
 
 def choose_k_by_elbow(sse_curve: dict[int, float]) -> int:
-    """Simple elbow heuristic: pick the k where the second derivative
-    (drop-off in marginal SSE improvement) is largest -- i.e. where the
-    curve visibly 'bends,' matching the paper's stated use of the
-    elbow method (Nainggolan et al., cited as [47])."""
+
     ks = sorted(sse_curve.keys())
     if len(ks) < 3:
         return ks[0] if ks else 1

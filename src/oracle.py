@@ -1,18 +1,4 @@
-"""
-oracle.py
 
-Differential-testing cache oracle, replicating Section 4.3's approach:
-
-  "we consider si is abnormal when its trace differs from any
-   sj in S \\ {si}. ... we represent si of each test case with the
-   maximum number of different records of software i with other
-   software" -- e.g. <0,0,0,5> means resolvers 1-3 agree, resolver 4
-   has 5 extra/differing cache records.
-
-No "golden model" is assumed -- exactly as the paper argues (they note
-even BIND, the most mature implementation, has 100+ CVEs, so nothing
-can serve as ground truth). Divergence itself is the signal.
-"""
 
 from __future__ import annotations
 
@@ -32,9 +18,7 @@ class TestCaseResult:
 
 def run_differential_test(test_id: int, resolvers: dict[str, MockResolver],
                            bug_opportunities: frozenset = frozenset()) -> TestCaseResult:
-    """Call AFTER each resolver in `resolvers` has processed the same
-    test case and BEFORE resetting them. Computes the paper's per-
-    resolver max-difference vector from the resolvers' cache snapshots."""
+
     order = tuple(sorted(resolvers.keys()))
     snapshots = {name: resolvers[name].cache_snapshot() for name in order}
 
